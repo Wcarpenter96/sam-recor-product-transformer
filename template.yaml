@@ -20,6 +20,11 @@ Resources:
       Runtime: python3.9
       Architectures:
         - arm64
+      Environment:
+        Variables:
+          WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
+          WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
+          WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -40,3 +45,19 @@ Outputs:
   RecorProductTransformerIamRole:
     Description: "Implicit IAM Role created for RecorProductTransformer function"
     Value: !GetAtt RecorProductTransformerRole.Arn
+
+Parameters:
+  WoocommerceBaseUrl:
+    Type: String
+    Description: "WooCommerce Base URL"
+    Default: "localhost"
+  WoocommerceConsumerKey:
+    Type: String
+    Description: "WooCommerce Consumer Key"
+    Default: ""
+    NoEcho: true
+  WoocommerceConsumerSecret:
+    Type: String
+    Description: "WooCommerce Consumer Secret"
+    Default: ""
+    NoEcho: true

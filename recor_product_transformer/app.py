@@ -1,6 +1,6 @@
 import json
 
-# import requests
+from recor_product_transformer.requests.woocommerce.woocommerce_list_all_products_request import WooCommerceListAllProductsRequest
 
 
 def lambda_handler(event, context):
@@ -32,6 +32,8 @@ def lambda_handler(event, context):
     #     print(e)
 
     #     raise e
+    products = WooCommerceListAllProductsRequest().run()
+    print(products)
 
     return {
         "statusCode": 200,

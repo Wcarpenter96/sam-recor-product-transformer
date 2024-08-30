@@ -187,7 +187,7 @@ celerybeat-schedule.*
 *.sage.py
 
 # Environments
-.env
+.env.*
 .venv
 env/
 venv/
@@ -243,5 +243,4 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
-*/cache/*
-*/deps/*
+.aws-sam/
