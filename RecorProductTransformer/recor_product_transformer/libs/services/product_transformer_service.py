@@ -30,13 +30,12 @@ class ProductTransformerService:
         self.iml_category_transformer = ImlCategoryTransformer()
 
     def run(self, products) -> Dict:
-        print(products)
         iml_category_ids = {
             category_id
             for product in products
             for category_id in product["category_id"]
         }
-        categories = self.woocommerce_list_all_product_categories_request.run()
+        categories = self.woocommerce_list_all_product_categories_request.run(slug=None)
         category_id_map = {category["slug"]: category["id"] for category in categories}
 
         # Create new categories

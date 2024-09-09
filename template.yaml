@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   sam-recor-product-transformer
@@ -15,38 +15,58 @@ Resources:
   RecorQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: "RecorSqs"
+      QueueName: RecorSqs
       VisibilityTimeout: 120
   LambdaSqsRole:
-    Type: "AWS::IAM::Role"
+    Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: LambdaSqsRole
       AssumeRolePolicyDocument:
-        Version: "2012–10–17"
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
-              Service: "lambda.amazonaws.com"
-            Action: "sts:AssumeRole"
-      Path: "/"
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
-        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+#  LambdaSqsRole:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      AssumeRolePolicyDocument:
+#        Version: '2012–10–17'
+#        Statement:
+#          - Action:
+#              - sts:AssumeRole
+#            Effect: Allow
+#            Principal:
+#              Service:
+#                - lambda.amazonaws.com
+#      Path: /
+#      ManagedPolicyArns:
+#        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+#        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+#        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
   SampleSQSPolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
-        - !Ref RecorQueue
+        - !Ref 'RecorQueue'
       PolicyDocument:
+        Version: '2012-10-17'
         Statement:
-          - Action:
-              - "SQS:*"
+          - Action: SQS:*
             Effect: "Allow"
-            Resource: "*"
-            Principal:
-              Service:
-                - "lambda.amazonaws.com"
+            Resource: !GetAtt 'RecorQueue.Arn'
+            Principal: '*'
   LambdaFunctionEventSourceMapping:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
@@ -85,7 +105,7 @@ Resources:
           WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
           WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
           WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
-      Role: !GetAtt LambdaSqsRole.Arn
+      Role: !GetAtt 'LambdaSqsRole.Arn'
 
 Outputs:
   RecorProductGetter:

@@ -34,13 +34,18 @@ class ImlItemPublisherService:
         response = ImlGetItemInfoRequest().run(counter)
         max_items = int(os.getenv("IML_MAX_ITEMS"))
         item_count = 0
+        print(f"ATTEMPT: Publishing Item {item_count} to {self.queue_url}")
         for item in ijson.items(
             ResponseAsFileObject(response.iter_content(chunk_size=65536)), "items.item", use_float=True
         ):
             if item_count >= max_items:
                 return
             else:
+                print(f"ATTEMPT: Publishing Item {item_count} to {self.queue_url}")
                 self.sqs_client.send_message(
                     QueueUrl=self.queue_url,
                     MessageBody=dumps(item),
                 )
+                item_count += 1
+                print(f"SUCCESS: Published Item {item_count} to {self.queue_url}")
+        print(f"SUCCESS: Published {item_count} items to {self.queue_url}")

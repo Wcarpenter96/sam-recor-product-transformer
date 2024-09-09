@@ -41,9 +41,6 @@ def lambda_handler(event, context):
 
     woocommerce_products = ProductTransformerService().run(items)
 
-    print("WOOCOMMERCE PRODUCTS")
-    print(woocommerce_products)
-
     return {
         "statusCode": 200,
         "body": json.dumps(
