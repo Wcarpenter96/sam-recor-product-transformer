@@ -5,13 +5,13 @@ from recor_product_transformer.libs.requests.woocommerce.woocommerce_base_reques
 )
 
 
-class WooCommerceListAllProductsRequest(WooCommerceBaseRequest):
+class WooCommerceListAllCategoriesRequest(WooCommerceBaseRequest):
     def run(self, slug: Optional[str]) -> dict:
         if slug is not None:
             params = {"slug": slug}
         else:
             params = {"per_page": 100}
-        response = self.client.get("products", params=params)
+        response = self.client.get("products/categories", params=params)
         if response.ok:
             return cast(dict, response.json())
         else:

@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+      "receiptHandle": "MessageReceiptHandle",
+      "body": "{\"item_uid\": 212994, \"item_id\": \"BIAOPZ09454B\", \"alt_part_no\": \"159084\", \"item_desc\": \"Ninja Arm Support for Console\", \"extended_desc\": null, \"img_sml\": \"https://shop.imlss.com/item/images/011807_S.png\", \"img_med\": \"https://shop.imlss.com/item/images/011807_L.png\", \"sales_unit\": \"EA\", \"sales_unit_size\": 1.0, \"list_price\": 0.0, \"short_code\": \"159084\", \"sp_unit\": \"EA\", \"sp_unit_size\": 1.0, \"width\": \"0.0\", \"height\": \"0.0\", \"length\": \"0.0\", \"weight\": \"0.0\", \"min_qty\": 1.0, \"next_break_price\": 0.0, \"next_break_qty\": 0, \"unit_price\": 230.4, \"qty_avail\": 0.0, \"vendor\": \"Keyline\", \"category\": \"Locksmith Equipment\", \"update_seq\": 18619997936, \"deleted\": false, \"link\": [], \"category_id\": [75, 354]}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1523232000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1523232000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "3da10f8d32513ea25d5dc51c1b7c9299",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:715584381811:recor-sqs",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

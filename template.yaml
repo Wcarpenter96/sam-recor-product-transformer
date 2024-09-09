@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   sam-recor-product-transformer
@@ -8,12 +8,72 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 60
     MemorySize: 128
 
 Resources:
+  RecorQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "RecorSqs"
+      VisibilityTimeout: 120
+  LambdaSqsRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: LambdaSqsRole
+      AssumeRolePolicyDocument:
+        Version: "2012–10–17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+  SampleSQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref RecorQueue
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "SQS:*"
+            Effect: "Allow"
+            Resource: "*"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+  LambdaFunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1
+      Enabled: true
+      EventSourceArn: !GetAtt RecorQueue.Arn
+      FunctionName: !GetAtt RecorProductTransformer.Arn
+  RecorProductGetter:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: RecorProductGetter/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          SQS_QUEUE_URL: !Ref SqsQueueUrl
+          WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
+          WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
+          WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
+          WOOCOMMERCE_IML_COUNTER_PRODUCT_ID: !Ref WoocommerceImlCounterProductId
+          IML_BASE_URL: !Ref ImlBaseUrl
+          IML_AUTH_TOKEN: !Ref ImlAuthToken
+          IML_MAX_ITEMS: !Ref ImlMaxItems
   RecorProductTransformer:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: RecorProductTransformer/
       Handler: app.lambda_handler
@@ -25,26 +85,15 @@ Resources:
           WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
           WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
           WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
-      Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: get
+      Role: !GetAtt LambdaSqsRole.Arn
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  RecorProductTransformerApi:
-    Description: "API Gateway endpoint URL for Prod stage for RecorProductTransformer function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  RecorProductGetter:
+    Description: "RecorProductGetter Lambda Function ARN"
+    Value: !GetAtt RecorProductGetter.Arn
   RecorProductTransformer:
     Description: "RecorProductTransformer Lambda Function ARN"
     Value: !GetAtt RecorProductTransformer.Arn
-  RecorProductTransformerIamRole:
-    Description: "Implicit IAM Role created for RecorProductTransformer function"
-    Value: !GetAtt RecorProductTransformerRole.Arn
 
 Parameters:
   WoocommerceBaseUrl:
@@ -61,3 +110,23 @@ Parameters:
     Description: "WooCommerce Consumer Secret"
     Default: ""
     NoEcho: true
+  WoocommerceImlCounterProductId:
+    Type: Number
+    Description: "WooCommerce Product ID for IML Last Call Counter"
+    Default: 0
+  ImlBaseUrl:
+    Type: String
+    Description: "IML Base Url"
+    Default: ""
+  ImlAuthToken:
+    Type: String
+    Description: "IML Auth Token"
+    Default: ""
+  ImlMaxItems:
+    Type: Number
+    Description: "Maximum Count of Items to retrieve and publish in the ImlGetItemInfoRequest"
+    Default: 100
+  SqsQueueUrl:
+    Type: String
+    Description: "SQS Queue that the ProductGetter publishes and the ProductTransformer consumes"
+    Default: ""

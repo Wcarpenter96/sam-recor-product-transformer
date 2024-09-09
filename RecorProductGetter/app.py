@@ -1,7 +1,7 @@
 import json
 
-from recor_product_transformer.libs.services.product_transformer_service import (
-    ProductTransformerService,
+from recor_product_getter.libs.services.product_getter_service import (
+    ProductGetterService,
 )
 
 
@@ -35,20 +35,13 @@ def lambda_handler(event, context):
 
     #     raise e
 
-    items = []
-    for record in event["Records"]:
-        items.append(json.loads(record["body"]))
-
-    woocommerce_products = ProductTransformerService().run(items)
-
-    print("WOOCOMMERCE PRODUCTS")
-    print(woocommerce_products)
+    ProductGetterService().run()
 
     return {
         "statusCode": 200,
         "body": json.dumps(
             {
-                "message": "hello world from recor product transformer!",
+                "message": "hello world from recor product getter!",
                 # "location": ip.text.replace("\n", "")
             }
         ),

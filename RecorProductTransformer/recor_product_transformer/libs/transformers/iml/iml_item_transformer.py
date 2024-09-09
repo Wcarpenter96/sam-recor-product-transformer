@@ -10,7 +10,7 @@ from recor_product_transformer.libs.transformers.iml.iml_image_transformer impor
 from recor_product_transformer.libs.transformers.transformer import Transformer
 
 
-class ImlProductTransformer(Transformer):
+class ImlItemTransformer(Transformer):
 
     def __init__(self):
         self.iml_category_transformer = ImlCategoryTransformer()
