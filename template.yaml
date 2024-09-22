@@ -38,23 +38,6 @@ Resources:
               - Effect: Allow
                 Action: '*'
                 Resource: '*'
-#  LambdaSqsRole:
-#    Type: AWS::IAM::Role
-#    Properties:
-#      AssumeRolePolicyDocument:
-#        Version: '2012–10–17'
-#        Statement:
-#          - Action:
-#              - sts:AssumeRole
-#            Effect: Allow
-#            Principal:
-#              Service:
-#                - lambda.amazonaws.com
-#      Path: /
-#      ManagedPolicyArns:
-#        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-#        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
-#        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
   SampleSQSPolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
@@ -105,6 +88,9 @@ Resources:
           WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
           WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
           WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
+          IML_BASE_URL: !Ref ImlBaseUrl
+          IML_AUTH_TOKEN: !Ref ImlAuthToken
+          IML_MAX_ITEMS: !Ref ImlMaxItems
       Role: !GetAtt 'LambdaSqsRole.Arn'
 
 Outputs:

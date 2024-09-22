@@ -11,3 +11,15 @@ class WooCommerceImage:
     id: Optional[int] = None
     src: Optional[str] = None
     name: Optional[str] = None
+
+    def to_json(self) -> dict:
+        """
+        Transforms a WooCommerceImage instance into json
+        Returns:
+            Dict[str, Any]: The json transformation
+        """
+        return {
+            "id": self.id,
+            "src": self.src,
+            "name": self.name,
+        }

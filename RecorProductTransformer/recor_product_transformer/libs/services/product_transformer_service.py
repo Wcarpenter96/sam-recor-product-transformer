@@ -1,5 +1,6 @@
 from typing import Dict
 
+from recor_product_transformer.libs.models.woocommerce import woocommerce_category
 from recor_product_transformer.libs.requests.iml.iml_get_category_list_request import (
     ImlGetCategoryListRequest,
 )
@@ -20,7 +21,7 @@ from recor_product_transformer.libs.transformers.iml.iml_item_transformer import
 class ProductTransformerService:
     def __init__(self):
         self.woocommerce_batch_update_categories_request = (
-            WooCommerceBatchUpdateCategoriesRequest
+            WooCommerceBatchUpdateCategoriesRequest()
         )
         self.woocommerce_list_all_product_categories_request = (
             WooCommerceListAllCategoriesRequest()
@@ -43,15 +44,17 @@ class ProductTransformerService:
         new_category_ids = iml_category_ids - category_id_map.keys()
         if new_category_ids:
             new_categories = []
-            iml_categories = self.iml_get_category_list_request.run()
-            for category_id in new_category_ids:
-                iml_category = [
-                    iml_category
-                    for iml_categories in iml_categories
-                    if iml_categories["short_code"] == category_id
-                ]
-                category = self.iml_category_transformer.run(iml_category)
-                new_categories.append(category)
+            all_iml_categories = self.iml_get_category_list_request.run()
+            new_iml_categories = [
+                iml_category
+                for iml_category in all_iml_categories
+                if iml_category["category_id"] in new_category_ids
+            ]
+            for new_iml_category in new_iml_categories:
+                print("NEW IML CATEGORY")
+                print(new_iml_category)
+                new_woocommerce_category = self.iml_category_transformer.transform(new_iml_category)
+                new_categories.append(new_woocommerce_category)
             self.woocommerce_batch_update_categories_request.run(new_categories)
 
         # TODO Create new products

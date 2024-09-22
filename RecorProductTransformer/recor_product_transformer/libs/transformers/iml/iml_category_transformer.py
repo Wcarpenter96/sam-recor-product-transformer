@@ -16,7 +16,7 @@ class ImlCategoryTransformer(Transformer):
         return WooCommerceCategory(
             name=raw_json.get("title"),
             slug=raw_json.get("category_id"),
-            img=self._get_image(raw_json),
+            image=self._get_image(raw_json),
         )
 
     def _get_image(self, raw_json):

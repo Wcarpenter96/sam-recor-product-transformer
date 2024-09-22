@@ -15,14 +15,16 @@ class WooCommerceBatchUpdateCategoriesRequest(WooCommerceBaseRequest):
 
     def run(self, categories: List[WooCommerceCategory]) -> dict:
 
-        print("ATTEMPT: Batch Updating WooCommerce Categories:", categories.to_json())
+        categories_json = [category.to_json() for category in categories]
+
+        print("ATTEMPT: Batch Updating WooCommerce Categories:", categories_json)
 
         response = self.client.put(
-            "products/categories/batch", {"create": categories.to_json()}
+            "products/categories/batch", {"create": categories_json}
         )
 
         if response.ok:
-            print("SUCCESS: Updated WooCommerce Categories:", response.to_json())
+            print("SUCCESS: Updated WooCommerce Categories:", response.json())
             return cast(dict, response.json())
         else:
             raise Exception(response.text)

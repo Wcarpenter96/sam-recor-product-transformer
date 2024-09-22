@@ -17,3 +17,18 @@ class WooCommerceCategory:
     slug: Optional[str] = None
     parent: Optional[int] = None
     image: Optional[WooCommerceImage] = None
+
+    def to_json(self) -> dict:
+        """
+        Transforms a WooCommerce instance into json
+        Returns:
+            Dict[str, Any]: The json transformation
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "slug": self.slug,
+            "parent": self.parent,
+            "image": self.image.to_json(),
+        }
+

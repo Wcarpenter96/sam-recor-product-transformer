@@ -3,7 +3,7 @@ import json
 from recor_product_getter.libs.services.product_getter_service import (
     ProductGetterService,
 )
-
+import traceback
 
 def lambda_handler(event, context):
     """Sample pure Lambda function
@@ -27,15 +27,14 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
+    try:
 
-    #     raise e
+        ProductGetterService().run()
 
-    ProductGetterService().run()
+    except Exception as e:
+
+        print(f"ERROR: {e}")
+        traceback.print_exc()
 
     return {
         "statusCode": 200,

@@ -15,6 +15,6 @@ class ImlGetCategoryListRequest(ImlBaseRequest):
 
         if response.ok:
             print("SUCCESS: Received Item Category List from IML")
-            return cast(dict, response.json())
+            return cast(dict, response.json()["category_list"])
         else:
             raise Exception(response.text)

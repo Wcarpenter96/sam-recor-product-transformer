@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from recor_product_transformer.libs.services.product_transformer_service import (
     ProductTransformerService,
@@ -27,19 +28,18 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
+    try:
 
-    #     raise e
+        items = []
+        for record in event["Records"]:
+            items.append(json.loads(record["body"]))
 
-    items = []
-    for record in event["Records"]:
-        items.append(json.loads(record["body"]))
+        woocommerce_products = ProductTransformerService().run(items)
 
-    woocommerce_products = ProductTransformerService().run(items)
+    except Exception as e:
+
+        print(f"ERROR: {e}")
+        traceback.print_exc()
 
     return {
         "statusCode": 200,
