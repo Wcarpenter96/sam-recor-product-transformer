@@ -19,7 +19,7 @@ class WooCommerceBatchUpdateCategoriesRequest(WooCommerceBaseRequest):
 
         print("ATTEMPT: Batch Updating WooCommerce Categories:", categories_json)
 
-        response = self.client.put(
+        response = self.client.post(
             "products/categories/batch", {"create": categories_json}
         )
 
