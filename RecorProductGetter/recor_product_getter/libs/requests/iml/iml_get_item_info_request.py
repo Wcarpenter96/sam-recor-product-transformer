@@ -5,6 +5,8 @@ from recor_product_getter.libs.requests.iml.iml_base_request import ImlBaseReque
 ijson works with file-like objects; that is, objects with a read method
 wrap the response to make it look like a file that can be read
 """
+
+
 class ResponseAsFileObject:
     def __init__(self, data):
         self.data = data

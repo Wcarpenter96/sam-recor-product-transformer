@@ -24,6 +24,7 @@ class WooCommerceBatchUpdateCategoriesRequest(WooCommerceBaseRequest):
         )
 
         if response.ok:
+            # TODO: Handle Create/Update Failures
             print("SUCCESS: Updated WooCommerce Categories:", response.json())
             return cast(dict, response.json())
         else:

@@ -1,3 +1,4 @@
+import decimal
 import os
 from json import dumps
 
@@ -6,7 +7,6 @@ import ijson
 from recor_product_getter.libs.requests.iml.iml_get_item_info_request import (
     ImlGetItemInfoRequest,
 )
-import decimal
 
 """
 ijson works with file-like objects; that is, objects with a read method
@@ -36,7 +36,9 @@ class ImlItemPublisherService:
         item_count = 0
         print(f"ATTEMPT: Publishing Item {item_count} to {self.queue_url}")
         for item in ijson.items(
-            ResponseAsFileObject(response.iter_content(chunk_size=65536)), "items.item", use_float=True
+            ResponseAsFileObject(response.iter_content(chunk_size=65536)),
+            "items.item",
+            use_float=True,
         ):
             if item_count >= max_items:
                 return

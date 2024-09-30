@@ -31,4 +31,3 @@ class WooCommerceCategory:
             "parent": self.parent,
             "image": self.image.to_json(),
         }
-

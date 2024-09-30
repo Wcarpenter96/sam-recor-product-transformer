@@ -1,9 +1,10 @@
 import json
+import traceback
 
 from recor_product_getter.libs.services.product_getter_service import (
     ProductGetterService,
 )
-import traceback
+
 
 def lambda_handler(event, context):
     """Sample pure Lambda function

@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import List, Optional, cast
 
 from recor_product_transformer.libs.requests.woocommerce.woocommerce_base_request import (
     WooCommerceBaseRequest,
@@ -6,25 +6,13 @@ from recor_product_transformer.libs.requests.woocommerce.woocommerce_base_reques
 
 
 class WooCommerceListAllProductsRequest(WooCommerceBaseRequest):
-    def run(self, slug: Optional[str]) -> dict:
-        if slug is not None:
-            params = {"slug": slug}
-        else:
-            params = {"per_page": 100}
-        response = self.client.get("products", params=params)
-        if response.ok:
-            return cast(dict, response.json())
-        else:
-            raise Exception(response.text)
+    def run(self, ids: Optional[List[str]]) -> dict:
 
-    def run(self, slug: Optional[str]) -> dict:
+        params = {"per_page": 100}
+        if ids is not None:
+            params = params | {"include": ids}
 
-        print(f"ATTEMPT: Getting WooCommerce Products with slug: {slug}")
-
-        if slug is not None:
-            params = {"slug": slug}
-        else:
-            params = {"per_page": 100}
+        print(f"ATTEMPT: Getting WooCommerce Products with params: {params}")
         response = self.client.get("products", params=params)
 
         if response.ok:
@@ -32,4 +20,3 @@ class WooCommerceListAllProductsRequest(WooCommerceBaseRequest):
             return cast(dict, response.json())
         else:
             raise Exception(response.text)
-

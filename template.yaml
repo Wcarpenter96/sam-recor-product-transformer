@@ -91,7 +91,26 @@ Resources:
           IML_BASE_URL: !Ref ImlBaseUrl
           IML_AUTH_TOKEN: !Ref ImlAuthToken
           IML_MAX_ITEMS: !Ref ImlMaxItems
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ImlItemIdTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ImlCategoryIdTable
       Role: !GetAtt 'LambdaSqsRole.Arn'
+  ImlItemIdTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: item_id
+        Type: String
+      TableName: iml-item-id-table
+  ImlCategoryIdTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: category_id
+        Type: String
+      TableName: iml-category-id-table
 
 Outputs:
   RecorProductGetter:

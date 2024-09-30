@@ -19,11 +19,10 @@ class WooCommerceBatchUpdateProductsRequest(WooCommerceBaseRequest):
 
         print("ATTEMPT: Batch Updating WooCommerce Products:", products_json)
 
-        response = self.client.post(
-            "products/batch", {"create": products_json}
-        )
+        response = self.client.post("products/batch", {"create": products_json})
 
         if response.ok:
+            # TODO: Handle Create/Update Failures
             print("SUCCESS: Updated WooCommerce Products:", response.json())
             return cast(dict, response.json())
         else:
