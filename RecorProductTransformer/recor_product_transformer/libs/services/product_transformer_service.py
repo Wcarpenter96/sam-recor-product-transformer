@@ -43,7 +43,7 @@ class ProductTransformerService:
 
     def run(self, products):
         iml_category_ids = {
-            category_id
+            str(category_id)
             for product in products
             for category_id in product["category_id"]
         }
@@ -53,20 +53,21 @@ class ProductTransformerService:
             RequestItems={
                 "iml-category-id-table": {
                     "Keys": [
-                        {"category_id": str(category_id)}
+                        {"category_id":category_id}
                         for category_id in iml_category_ids
                     ]
                 }
             }
         )
         old_category_id_map = {}
-        for category in response.get("Responses", {}).get("category_id", []):
+        for category in response.get("Responses", {}).get("iml-category-id-table", []):
             old_category_id_map[category["category_id"]] = category["woocommerce_category_id"]
 
         old_iml_category_ids = old_category_id_map.keys()
         new_iml_category_ids = iml_category_ids - old_iml_category_ids
 
         # Create New WooCommerce Categories from IML Categories
+        new_category_id_map = {}
         if new_iml_category_ids:
             new_categories = []
             all_iml_categories = self.iml_get_category_list_request.run()
@@ -83,7 +84,6 @@ class ProductTransformerService:
             response = self.woocommerce_batch_update_categories_request.run(
                 new_categories
             )
-            new_category_id_map = {}
             with self.category_id_table.batch_writer() as writer:
                 for new_woocommerce_category in response.get("create", []):
                     woocommerce_category_id = new_woocommerce_category["id"]
@@ -97,7 +97,7 @@ class ProductTransformerService:
                     print("SUCCESS: Wrote category map to DynamoDB: ", category_map)
                     new_category_id_map.update({iml_category_id: woocommerce_category_id})
 
-        iml_item_ids = {product["short_code"] for product in products}
+        iml_item_ids = {str(product["short_code"]) for product in products}
 
         # Get WooCommerce Categories for WooCommerce Product Create/Updates
         category_map = new_category_id_map | old_category_id_map
@@ -118,7 +118,7 @@ class ProductTransformerService:
             }
         )
         old_item_id_map = {}
-        for item in response.get("Responses", {}).get("item_id", []):
+        for item in response.get("Responses", {}).get("iml-item-id-table", []):
             old_item_id_map[item["item_id"]] = item["woocommerce_product_id"]
 
         old_iml_item_ids = old_item_id_map.keys()
