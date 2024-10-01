@@ -59,16 +59,14 @@ class ProductTransformerService:
                 }
             }
         )
-        old_category_maps = [
-            category
-            for category in response.get("Responses", {}).get("category_id", [])
-        ]
-        old_iml_category_ids = {
-            category["category_id"] for category in old_category_maps
-        }
+        old_category_id_map = {}
+        for category in response.get("Responses", {}).get("category_id", []):
+            old_category_id_map[category["category_id"]] = category["woocommerce_category_id"]
+
+        old_iml_category_ids = old_category_id_map.keys()
         new_iml_category_ids = iml_category_ids - old_iml_category_ids
 
-        # Create new WooCommerce Categories from IML Categories
+        # Create New WooCommerce Categories from IML Categories
         if new_iml_category_ids:
             new_categories = []
             all_iml_categories = self.iml_get_category_list_request.run()
@@ -85,25 +83,25 @@ class ProductTransformerService:
             response = self.woocommerce_batch_update_categories_request.run(
                 new_categories
             )
-            new_category_maps = []
+            new_category_id_map = {}
             with self.category_id_table.batch_writer() as writer:
                 for new_woocommerce_category in response.get("create", []):
+                    woocommerce_category_id = new_woocommerce_category["id"]
+                    iml_category_id = new_woocommerce_category["slug"]
                     category_map = {
-                        "category_id": new_woocommerce_category["slug"],
-                        "woocommerce_category_id": new_woocommerce_category["id"],
+                        "category_id": iml_category_id,
+                        "woocommerce_category_id": woocommerce_category_id
                     }
                     print("ATTEMPT: Writing category map to DynamoDB: ", category_map)
                     writer.put_item(Item=category_map)
                     print("SUCCESS: Wrote category map to DynamoDB: ", category_map)
-                    new_category_maps.append(category_map)
+                    new_category_id_map.update({iml_category_id: woocommerce_category_id})
 
         iml_item_ids = {product["short_code"] for product in products}
 
         # Get WooCommerce Categories for WooCommerce Product Create/Updates
-        category_maps = new_category_maps + old_category_maps
-        woocommerce_category_ids = [
-            category_map["woocommerce_category_id"] for category_map in category_maps
-        ]
+        category_map = new_category_id_map | old_category_id_map
+        woocommerce_category_ids = list(category_map.values())
         response = self.woocommerce_list_all_product_categories_request.run(
             ids=woocommerce_category_ids
         )
@@ -119,15 +117,16 @@ class ProductTransformerService:
                 }
             }
         )
-        old_item_maps = [
-            item for item in response.get("Responses", {}).get("item_id", [])
-        ]
-        old_iml_item_ids = {item["woocommerce_product_id"] for item in old_item_maps}
+        old_item_id_map = {}
+        for item in response.get("Responses", {}).get("item_id", []):
+            old_item_id_map[item["item_id"]] = item["woocommerce_product_id"]
+
+        old_iml_item_ids = old_item_id_map.keys()
         new_iml_item_ids = iml_item_ids - old_iml_item_ids
 
-        # Create new WooCommerce Products from IML Items
+        # Build New WooCommerce Products from IML Items
+        new_woocommerce_products = []
         if new_iml_item_ids:
-            new_woocommerce_products = []
             new_iml_items = [
                 iml_item
                 for iml_item in products
@@ -141,21 +140,39 @@ class ProductTransformerService:
                     }
                 )
                 new_woocommerce_products.append(new_woocommerce_product)
-            response = self.woocommerce_batch_update_products_request.run(
-                new_woocommerce_products
-            )
-            new_item_maps = []
-            with self.item_id_table.batch_writer() as writer:
-                for new_woocommerce_product in response.get("create", []):
-                    item_map = {
-                        "item_id": new_woocommerce_product["slug"],
-                        "woocommerce_product_id": new_woocommerce_product["id"],
-                    }
-                    print("ATTEMPT: Writing item map to DynamoDB: ", item_map)
-                    writer.put_item(Item=item_map)
-                    print("SUCCESS: Wrote item map to DynamoDB: ", item_map)
-                    new_item_maps.append(item_map)
 
-        # Update old WooCommerce Products from IML Items
+        # Build Old WooCommerce Products from IML Items
+        old_woocommerce_products = []
         if old_iml_item_ids:
-            pass
+            old_iml_items = [
+                iml_item
+                for iml_item in products
+                if iml_item["short_code"] in old_iml_item_ids
+            ]
+            for old_iml_item in old_iml_items:
+                old_woocommerce_product = self.iml_item_transformer.transform(
+                    {
+                        **old_iml_item,
+                        ImlItemTransformer.WOOCOMMERCE_CATEGORIES_BY_SLUG: woocommerce_categories_by_slug,
+                        ImlItemTransformer.WOOCOMMERCE_PRODUCT_ID: old_item_id_map[old_iml_item["short_code"]]
+                    }
+                )
+                old_woocommerce_products.append(old_woocommerce_product)
+
+        # Batch Create New/Update Old WooCommerce Products
+        response = self.woocommerce_batch_update_products_request.run(
+            new_products=new_woocommerce_products, old_products=old_woocommerce_products
+        )
+
+        # Add new WooCommerce Product to Item Map
+        new_item_maps = []
+        with self.item_id_table.batch_writer() as writer:
+            for new_woocommerce_product in response.get("create", []):
+                item_map = {
+                    "item_id": new_woocommerce_product["slug"],
+                    "woocommerce_product_id": new_woocommerce_product["id"],
+                }
+                print("ATTEMPT: Writing item map to DynamoDB: ", item_map)
+                writer.put_item(Item=item_map)
+                print("SUCCESS: Wrote item map to DynamoDB: ", item_map)
+                new_item_maps.append(item_map)

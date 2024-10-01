@@ -19,7 +19,7 @@ class WooCommerceProduct:
     """
 
     type: str = "simple"
-    id: Optional[int] = None
+    id: Optional[int] = None # For Updates Only
     slug: Optional[str] = None
     sku: Optional[str] = None
     name: Optional[str] = None
@@ -36,9 +36,8 @@ class WooCommerceProduct:
         Returns:
             Dict[str, Any]: The json transformation
         """
-        return {
+        woocommerce_product = {
             "type": self.type,
-            "id": self.id,
             "slug": self.slug,
             "sku": self.sku,
             "name": self.name,
@@ -48,3 +47,9 @@ class WooCommerceProduct:
             "categories": [category.to_json() for category in self.categories],
             "images": [image.to_json() for image in self.images],
         }
+
+        # For Updates Only
+        if self.id:
+            woocommerce_product["id"] = self.id
+
+        return woocommerce_product

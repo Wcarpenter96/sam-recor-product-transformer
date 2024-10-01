@@ -13,13 +13,13 @@ class WooCommerceBatchUpdateProductsRequest(WooCommerceBaseRequest):
     By default, it's limited to up to 100 objects to be created, updated or deleted.
     """
 
-    def run(self, products: List[WooCommerceProduct]) -> dict:
+    def run(self, new_products: List[WooCommerceProduct], old_products: List[WooCommerceProduct]) -> dict:
 
-        products_json = [product.to_json() for product in products]
+        products_json = {"create": [product.to_json() for product in new_products], "update": [product.to_json() for product in old_products]}
 
         print("ATTEMPT: Batch Updating WooCommerce Products:", products_json)
 
-        response = self.client.post("products/batch", {"create": products_json})
+        response = self.client.post("products/batch", products_json)
 
         if response.ok:
             # TODO: Handle Create/Update Failures

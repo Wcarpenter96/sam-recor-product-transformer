@@ -18,6 +18,7 @@ from recor_product_transformer.libs.transformers.transformer import Transformer
 
 class ImlItemTransformer(Transformer):
     WOOCOMMERCE_CATEGORIES_BY_SLUG = "WOOCOMMERCE_CATEGORIES_BY_SLUG"
+    WOOCOMMERCE_PRODUCT_ID = "WOOCOMMERCE_PRODUCT_ID"
 
     def __init__(self):
         self.iml_dimensions_transformer = ImlDimensionsTransformer()
@@ -27,6 +28,7 @@ class ImlItemTransformer(Transformer):
         :param raw_json: raw_json
         """
         return WooCommerceProduct(
+            id=raw_json.get(self.WOOCOMMERCE_PRODUCT_ID), # For Updates Only
             name=raw_json.get("item_desc"),
             sku=raw_json.get("item_id"),
             slug=raw_json.get("short_code"),
