@@ -46,8 +46,8 @@ class ImlItemTransformer(Transformer):
             self.WOOCOMMERCE_CATEGORIES_BY_SLUG
         )
         for iml_category_id in raw_json.get("category_id"):
-            if iml_category_id in woocommerce_category_map_by_slug:
-                woocommerce_category = woocommerce_category_map_by_slug[iml_category_id]
+            if str(iml_category_id) in woocommerce_category_map_by_slug:
+                woocommerce_category = woocommerce_category_map_by_slug[str(iml_category_id)]
                 woocommerce_categories.append(
                     WooCommerceCategory(
                         id=woocommerce_category.get("id"),

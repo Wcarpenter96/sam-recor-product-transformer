@@ -28,11 +28,14 @@ class WooCommerceCategory:
             "name": self.name,
             "slug": self.slug,
             "parent": self.parent,
-            "image": self.image.to_json(),
         }
 
         # For Updates Only
         if self.id:
             woocommerce_category["id"] = int(self.id)
+
+        # For Creates Only
+        if self.image:
+            woocommerce_category["image"] = self.image.to_json(),
 
         return woocommerce_category
