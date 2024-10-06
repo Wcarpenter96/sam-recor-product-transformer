@@ -50,6 +50,6 @@ class WooCommerceProduct:
 
         # For Updates Only
         if self.id:
-            woocommerce_product["id"] = self.id
+            woocommerce_product["id"] = int(self.id)
 
         return woocommerce_product

@@ -74,13 +74,11 @@ class ProductTransformerService:
             new_iml_categories = [
                 iml_category
                 for iml_category in all_iml_categories
-                if iml_category["category_id"] in new_iml_category_ids
+                if str(iml_category["category_id"]) in new_iml_category_ids
             ]
             for new_iml_category in new_iml_categories:
-                new_woocommerce_category = self.iml_category_transformer.transform(
-                    new_iml_category
-                )
-                new_categories.append(new_woocommerce_category)
+                new_category = self.iml_category_transformer.transform(new_iml_category)
+                new_categories.append(new_category)
             response = self.woocommerce_batch_update_categories_request.run(
                 new_categories
             )
@@ -147,7 +145,7 @@ class ProductTransformerService:
             old_iml_items = [
                 iml_item
                 for iml_item in products
-                if iml_item["short_code"] in old_iml_item_ids
+                if str(iml_item["short_code"]) in old_iml_item_ids
             ]
             for old_iml_item in old_iml_items:
                 old_woocommerce_product = self.iml_item_transformer.transform(

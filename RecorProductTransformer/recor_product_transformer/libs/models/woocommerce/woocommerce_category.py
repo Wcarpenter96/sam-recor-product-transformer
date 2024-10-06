@@ -24,10 +24,15 @@ class WooCommerceCategory:
         Returns:
             Dict[str, Any]: The json transformation
         """
-        return {
-            "id": self.id,
+        woocommerce_category = {
             "name": self.name,
             "slug": self.slug,
             "parent": self.parent,
             "image": self.image.to_json(),
         }
+
+        # For Updates Only
+        if self.id:
+            woocommerce_category["id"] = int(self.id)
+
+        return woocommerce_category
