@@ -21,6 +21,17 @@ from recor_product_transformer.libs.transformers.iml.iml_item_transformer import
 )
 
 
+def recursively_collect_parent_category_ids(new_iml_category, all_iml_categories, parent_category_ids):
+    parent_category_ids.add(new_iml_category.get("category_id"))
+    parent_category_id = new_iml_category.get("parent_id", -1)
+    if parent_category_id != -1:
+        parent_category = [
+            iml_category
+            for iml_category in all_iml_categories
+            if iml_category["category_id"] == parent_category_id
+        ]
+        return recursively_collect_parent_category_ids(parent_category, all_iml_categories, parent_category_ids)
+
 class ProductTransformerService:
     def __init__(self):
         self.woocommerce_batch_update_categories_request = (
@@ -76,9 +87,23 @@ class ProductTransformerService:
                 for iml_category in all_iml_categories
                 if str(iml_category["category_id"]) in new_iml_category_ids
             ]
+            # Collect parent category ids of new_iml_categories
+            parent_category_ids = {}
             for new_iml_category in new_iml_categories:
+                recursively_collect_parent_category_ids(new_iml_category, all_iml_categories, parent_category_ids)
                 new_category = self.iml_category_transformer.transform(new_iml_category)
                 new_categories.append(new_category)
+            # Add the parent category id if we haven't already
+            new_parent_category_ids = parent_category_ids - old_iml_category_ids - new_iml_category_ids
+            if new_parent_category_ids:
+                new_iml_parent_categories = [
+                    iml_category
+                    for iml_category in all_iml_categories
+                    if str(iml_category["category_id"]) in new_iml_category_ids
+                ]
+                for new_parent_iml_category in new_iml_parent_categories:
+                    new_category = self.iml_category_transformer.transform(new_parent_iml_category)
+                    new_categories.append(new_category)
             response = self.woocommerce_batch_update_categories_request.run(
                 new_categories
             )
