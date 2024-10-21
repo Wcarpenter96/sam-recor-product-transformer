@@ -21,7 +21,9 @@ from recor_product_transformer.libs.transformers.iml.iml_item_transformer import
 )
 
 
-def recursively_collect_parent_category_ids(new_iml_category, all_iml_categories, parent_category_ids):
+def recursively_collect_parent_category_ids(
+    new_iml_category, all_iml_categories, parent_category_ids
+):
     parent_category_ids.add(new_iml_category.get("category_id"))
     parent_category_id = new_iml_category.get("parent_id", -1)
     if parent_category_id != -1:
@@ -29,8 +31,11 @@ def recursively_collect_parent_category_ids(new_iml_category, all_iml_categories
             iml_category
             for iml_category in all_iml_categories
             if iml_category["category_id"] == parent_category_id
-        ]
-        return recursively_collect_parent_category_ids(parent_category, all_iml_categories, parent_category_ids)
+        ][0]
+        return recursively_collect_parent_category_ids(
+            parent_category, all_iml_categories, parent_category_ids
+        )
+
 
 class ProductTransformerService:
     def __init__(self):
@@ -64,15 +69,16 @@ class ProductTransformerService:
             RequestItems={
                 "iml-category-id-table": {
                     "Keys": [
-                        {"category_id":category_id}
-                        for category_id in iml_category_ids
+                        {"category_id": category_id} for category_id in iml_category_ids
                     ]
                 }
             }
         )
         old_category_id_map = {}
         for category in response.get("Responses", {}).get("iml-category-id-table", []):
-            old_category_id_map[category["category_id"]] = category["woocommerce_category_id"]
+            old_category_id_map[category["category_id"]] = category[
+                "woocommerce_category_id"
+            ]
 
         old_iml_category_ids = old_category_id_map.keys()
         new_iml_category_ids = iml_category_ids - old_iml_category_ids
@@ -88,21 +94,27 @@ class ProductTransformerService:
                 if str(iml_category["category_id"]) in new_iml_category_ids
             ]
             # Collect parent category ids of new_iml_categories
-            parent_category_ids = {}
+            parent_category_ids = set()
             for new_iml_category in new_iml_categories:
-                recursively_collect_parent_category_ids(new_iml_category, all_iml_categories, parent_category_ids)
+                recursively_collect_parent_category_ids(
+                    new_iml_category, all_iml_categories, parent_category_ids
+                )
                 new_category = self.iml_category_transformer.transform(new_iml_category)
                 new_categories.append(new_category)
             # Add the parent category id if we haven't already
-            new_parent_category_ids = parent_category_ids - old_iml_category_ids - new_iml_category_ids
+            new_parent_category_ids = (
+                parent_category_ids - old_iml_category_ids - new_iml_category_ids
+            )
             if new_parent_category_ids:
                 new_iml_parent_categories = [
                     iml_category
                     for iml_category in all_iml_categories
-                    if str(iml_category["category_id"]) in new_iml_category_ids
+                    if str(iml_category["category_id"]) in new_parent_category_ids
                 ]
                 for new_parent_iml_category in new_iml_parent_categories:
-                    new_category = self.iml_category_transformer.transform(new_parent_iml_category)
+                    new_category = self.iml_category_transformer.transform(
+                        new_parent_iml_category
+                    )
                     new_categories.append(new_category)
             response = self.woocommerce_batch_update_categories_request.run(
                 new_categories
@@ -113,12 +125,14 @@ class ProductTransformerService:
                     iml_category_id = new_woocommerce_category["slug"]
                     category_map = {
                         "category_id": iml_category_id,
-                        "woocommerce_category_id": woocommerce_category_id
+                        "woocommerce_category_id": woocommerce_category_id,
                     }
                     print("ATTEMPT: Writing category map to DynamoDB: ", category_map)
                     writer.put_item(Item=category_map)
                     print("SUCCESS: Wrote category map to DynamoDB: ", category_map)
-                    new_category_id_map.update({iml_category_id: woocommerce_category_id})
+                    new_category_id_map.update(
+                        {iml_category_id: woocommerce_category_id}
+                    )
 
         iml_item_ids = {str(product["short_code"]) for product in products}
 
@@ -177,7 +191,9 @@ class ProductTransformerService:
                     {
                         **old_iml_item,
                         ImlItemTransformer.WOOCOMMERCE_CATEGORIES_BY_SLUG: woocommerce_categories_by_slug,
-                        ImlItemTransformer.WOOCOMMERCE_PRODUCT_ID: old_item_id_map[old_iml_item["short_code"]]
+                        ImlItemTransformer.WOOCOMMERCE_PRODUCT_ID: old_item_id_map[
+                            old_iml_item["short_code"]
+                        ],
                     }
                 )
                 old_woocommerce_products.append(old_woocommerce_product)

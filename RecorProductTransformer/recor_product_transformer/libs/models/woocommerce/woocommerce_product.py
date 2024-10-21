@@ -19,7 +19,7 @@ class WooCommerceProduct:
     """
 
     type: str = "simple"
-    id: Optional[int] = None # For Updates Only
+    id: Optional[int] = None  # For Updates Only
     slug: Optional[str] = None
     sku: Optional[str] = None
     name: Optional[str] = None

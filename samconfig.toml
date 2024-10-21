@@ -22,7 +22,7 @@ s3_prefix = "sam-recor-product-transformer"
 region = "us-east-1"
 profile = "weston"
 image_repositories = []
-parameter_overrides = "WoocommerceBaseUrl=\"localhost\" WoocommerceImlCounterProductId=\"0\" ImlBaseUrl=\"\" ImlAuthToken=\"\" ImlMaxItems=\"100\" SqsQueueUrl=\"\""
+parameter_overrides = "WoocommerceBaseUrl=\"localhost\" WoocommerceImlCounterProductId=\"0\" ImlBaseUrl=\"\" ImlAuthToken=\"\" ImlMaxItems=\"100\" ImlMaxBatchCategories=\"50\" ImlMaxTotalCategories=\"1\" SqsQueueUrl=\"\""
 
 [default.package.parameters]
 resolve_s3 = true

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from recor_product_transformer.libs.models.woocommerce.woocommerce_image import (
+from recor_category_transformer.libs.models.woocommerce.woocommerce_image import (
     WooCommerceImage,
 )
 
@@ -27,8 +27,10 @@ class WooCommerceCategory:
         woocommerce_category = {
             "name": self.name,
             "slug": self.slug,
-            "parent": self.parent,
         }
+
+        if self.parent:
+            woocommerce_category["parent"] = int(self.parent)
 
         # For Updates Only
         if self.id:

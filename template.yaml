@@ -97,6 +97,27 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ImlCategoryIdTable
       Role: !GetAtt 'LambdaSqsRole.Arn'
+  RecorCategoryTransformer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: RecorCategoryTransformer/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
+          WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
+          WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
+          IML_BASE_URL: !Ref ImlBaseUrl
+          IML_AUTH_TOKEN: !Ref ImlAuthToken
+          IML_MAX_BATCH_CATEGORIES: !Ref ImlMaxBatchCategories
+          IML_MAX_TOTAL_CATEGORIES: !Ref ImlMaxTotalCategories
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ImlCategoryIdTable
+      Role: !GetAtt 'LambdaSqsRole.Arn'
   ImlItemIdTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -119,6 +140,9 @@ Outputs:
   RecorProductTransformer:
     Description: "RecorProductTransformer Lambda Function ARN"
     Value: !GetAtt RecorProductTransformer.Arn
+  RecorCategoryTransformer:
+    Description: "RecorCategoryTransformer Lambda Function ARN"
+    Value: !GetAtt RecorCategoryTransformer.Arn
 
 Parameters:
   WoocommerceBaseUrl:
@@ -155,3 +179,11 @@ Parameters:
     Type: String
     Description: "SQS Queue that the ProductGetter publishes and the ProductTransformer consumes"
     Default: ""
+  ImlMaxBatchCategories:
+    Type: Number
+    Description: "RecorCategoryTransformer max batch transform count"
+    Default: 50
+  ImlMaxTotalCategories:
+    Type: Number
+    Description: "RecorCategoryTransformer max total transform count"
+    Default: 1

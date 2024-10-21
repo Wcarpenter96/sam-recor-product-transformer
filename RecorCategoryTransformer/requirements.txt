@@ -1,0 +1,2 @@
+requests
+woocommerce==3.0.0

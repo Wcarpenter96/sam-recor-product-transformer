@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/RecorProductGetter" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/RecorProductTransformer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/RecorProductTransformer" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/RecorCategoryTransformer" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (sam-recor-product-transformer)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

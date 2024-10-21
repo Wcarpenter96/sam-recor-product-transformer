@@ -28,7 +28,7 @@ class ImlItemTransformer(Transformer):
         :param raw_json: raw_json
         """
         return WooCommerceProduct(
-            id=raw_json.get(self.WOOCOMMERCE_PRODUCT_ID), # For Updates Only
+            id=raw_json.get(self.WOOCOMMERCE_PRODUCT_ID),  # For Updates Only
             name=raw_json.get("item_desc"),
             sku=raw_json.get("item_id"),
             slug=raw_json.get("short_code"),
@@ -47,7 +47,9 @@ class ImlItemTransformer(Transformer):
         )
         for iml_category_id in raw_json.get("category_id"):
             if str(iml_category_id) in woocommerce_category_map_by_slug:
-                woocommerce_category = woocommerce_category_map_by_slug[str(iml_category_id)]
+                woocommerce_category = woocommerce_category_map_by_slug[
+                    str(iml_category_id)
+                ]
                 woocommerce_categories.append(
                     WooCommerceCategory(
                         id=woocommerce_category.get("id"),
