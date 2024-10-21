@@ -22,7 +22,7 @@ class ImlCategoryTransformer(Transformer):
                 str(raw_json.get("parent_id"))
             ),
         )
-        
+
     def _get_image(self, raw_json):
         return WooCommerceImage(
             src=raw_json.get("img"),
