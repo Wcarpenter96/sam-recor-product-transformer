@@ -27,8 +27,10 @@ class WooCommerceCategory:
         woocommerce_category = {
             "name": self.name,
             "slug": self.slug,
-            "parent": self.parent,
         }
+
+        if self.parent:
+            woocommerce_category["parent"] = int(self.parent)
 
         # For Updates Only
         if self.id:

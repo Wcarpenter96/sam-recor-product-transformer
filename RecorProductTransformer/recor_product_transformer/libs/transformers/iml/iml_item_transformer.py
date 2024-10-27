@@ -17,8 +17,8 @@ from recor_product_transformer.libs.transformers.transformer import Transformer
 
 
 class ImlItemTransformer(Transformer):
-    WOOCOMMERCE_CATEGORIES_BY_SLUG = "WOOCOMMERCE_CATEGORIES_BY_SLUG"
-    WOOCOMMERCE_PRODUCT_ID = "WOOCOMMERCE_PRODUCT_ID"
+    CATEGORY_ID_MAP = "CATEGORY_ID_MAP"
+    PRODUCT_ID_MAP = "PRODUCT_ID_MAP"
 
     def __init__(self):
         self.iml_dimensions_transformer = ImlDimensionsTransformer()
@@ -28,7 +28,7 @@ class ImlItemTransformer(Transformer):
         :param raw_json: raw_json
         """
         return WooCommerceProduct(
-            id=raw_json.get(self.WOOCOMMERCE_PRODUCT_ID),  # For Updates Only
+            id=self._get_product_id(raw_json),  # For Updates Only
             name=raw_json.get("item_desc"),
             sku=raw_json.get("item_id"),
             slug=raw_json.get("short_code"),
@@ -41,23 +41,11 @@ class ImlItemTransformer(Transformer):
         )
 
     def _get_categories(self, raw_json):
-        woocommerce_categories = []
-        woocommerce_category_map_by_slug = raw_json.get(
-            self.WOOCOMMERCE_CATEGORIES_BY_SLUG
-        )
-        for iml_category_id in raw_json.get("category_id"):
-            if str(iml_category_id) in woocommerce_category_map_by_slug:
-                woocommerce_category = woocommerce_category_map_by_slug[
-                    str(iml_category_id)
-                ]
-                woocommerce_categories.append(
-                    WooCommerceCategory(
-                        id=woocommerce_category.get("id"),
-                        name=woocommerce_category.get("name"),
-                        slug=woocommerce_category.get("slug"),
-                    )
-                )
-        return woocommerce_categories
+        category_id_map = raw_json.get(self.CATEGORY_ID_MAP)
+        return [
+            WooCommerceCategory(id=category_id_map[str(iml_category_id)])
+            for iml_category_id in raw_json.get("category_id")
+        ]
 
     def _get_description(self, raw_json):
         extended_desc = raw_json.get("extended_desc")
@@ -84,3 +72,8 @@ class ImlItemTransformer(Transformer):
             WooCommerceImage(src=raw_json.get("img_sml"), name="iml_img_sml"),
             WooCommerceImage(src=raw_json.get("img_med"), name="iml_img_med"),
         ]
+
+    def _get_product_id(self, raw_json):
+        if raw_json.get(self.PRODUCT_ID_MAP):
+            product_id = raw_json[self.PRODUCT_ID_MAP].get(raw_json["short_code"], None)
+            return product_id
