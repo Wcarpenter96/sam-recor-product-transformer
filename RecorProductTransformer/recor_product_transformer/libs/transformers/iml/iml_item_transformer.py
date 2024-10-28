@@ -69,7 +69,6 @@ class ImlItemTransformer(Transformer):
 
     def _get_images(self, raw_json):
         return [
-            WooCommerceImage(src=raw_json.get("img_sml"), name="iml_img_sml"),
             WooCommerceImage(src=raw_json.get("img_med"), name="iml_img_med"),
         ]
 

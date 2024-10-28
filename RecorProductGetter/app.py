@@ -1,4 +1,5 @@
 import json
+import os
 import traceback
 
 from recor_product_getter.libs.services.product_getter_service import (
@@ -29,8 +30,11 @@ def lambda_handler(event, context):
     """
 
     try:
-
-        ProductGetterService().run()
+        max_batch_items = int(os.getenv("IML_MAX_BATCH_ITEMS"))
+        max_total_items = int(os.getenv("IML_MAX_TOTAL_ITEMS"))
+        ProductGetterService().run(
+            max_batch_items=max_batch_items, max_total_items=max_total_items
+        )
 
     except Exception as e:
 

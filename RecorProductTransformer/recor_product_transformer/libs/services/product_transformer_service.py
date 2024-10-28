@@ -84,7 +84,9 @@ class ProductTransformerService:
         new_iml_category_ids = iml_category_ids - old_iml_category_ids
 
         if new_iml_category_ids:
-            print(f"ERROR: New IML Categories: {new_iml_category_ids}. Run RecorCategoryTransformer to resolve. Returning")
+            print(
+                f"ERROR: New IML Categories: {new_iml_category_ids}. Run RecorCategoryTransformer to resolve. Returning"
+            )
             return
 
         iml_item_ids = {str(product["short_code"]) for product in products}
@@ -134,7 +136,7 @@ class ProductTransformerService:
                     {
                         **old_iml_item,
                         ImlItemTransformer.CATEGORY_ID_MAP: old_category_id_map,
-                        ImlItemTransformer.PRODUCT_ID_MAP: old_item_id_map
+                        ImlItemTransformer.PRODUCT_ID_MAP: old_item_id_map,
                     }
                 )
                 old_woocommerce_products.append(old_woocommerce_product)

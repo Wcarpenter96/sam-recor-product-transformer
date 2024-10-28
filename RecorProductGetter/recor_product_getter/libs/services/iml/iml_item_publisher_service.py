@@ -30,24 +30,40 @@ class ImlItemPublisherService:
         self.sqs_client = boto3.client("sqs")
         self.queue_url = os.getenv("SQS_QUEUE_URL")
 
-    def run(self, counter):
+    def run(self, counter, max_batch_items, max_total_items):
         response = ImlGetItemInfoRequest().run(counter)
-        max_items = int(os.getenv("IML_MAX_ITEMS"))
-        item_count = 0
-        print(f"ATTEMPT: Publishing Item {item_count} to {self.queue_url}")
+        total_item_count = 0
+        batch_item_count = 0
+        batch_count = 0
+        batch_items = []
         for item in ijson.items(
             ResponseAsFileObject(response.iter_content(chunk_size=65536)),
             "items.item",
             use_float=True,
         ):
-            if item_count >= max_items:
-                return
-            else:
-                print(f"ATTEMPT: Publishing Item {item_count} to {self.queue_url}")
-                self.sqs_client.send_message(
-                    QueueUrl=self.queue_url,
-                    MessageBody=dumps(item),
+            if total_item_count > max_total_items:
+                print(
+                    f"WARNING: {batch_count + 1} batches of {max_batch_items} Items is greater than the maximum total Items {max_total_items}."
                 )
-                item_count += 1
-                print(f"SUCCESS: Published Item {item_count} to {self.queue_url}")
-        print(f"SUCCESS: Published {item_count} items to {self.queue_url}")
+                break
+            else:
+                total_item_count += 1
+                batch_item_count += 1
+                batch_items.append(item)
+                if batch_item_count == max_batch_items:
+                    batch_count += 1
+                    print(
+                        f"ATTEMPT: Publishing Batch {batch_count} with {batch_item_count} Items to {self.queue_url}"
+                    )
+                    self.sqs_client.send_message(
+                        QueueUrl=self.queue_url,
+                        MessageBody=dumps(batch_items),
+                    )
+                    print(
+                        f"SUCCESS: Published Batch {batch_count} with {batch_item_count} Items to {self.queue_url}"
+                    )
+                    batch_item_count = 0
+                    batch_items = []
+        print(
+            f"SUCCESS: Published {batch_count * max_batch_items} Items to {self.queue_url}"
+        )

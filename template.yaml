@@ -74,7 +74,8 @@ Resources:
           WOOCOMMERCE_IML_COUNTER_PRODUCT_ID: !Ref WoocommerceImlCounterProductId
           IML_BASE_URL: !Ref ImlBaseUrl
           IML_AUTH_TOKEN: !Ref ImlAuthToken
-          IML_MAX_ITEMS: !Ref ImlMaxItems
+          IML_MAX_BATCH_ITEMS: !Ref ImlMaxBatchItems
+          IML_MAX_TOTAL_ITEMS: !Ref ImlMaxTotalItems
   RecorProductTransformer:
     Type: AWS::Serverless::Function
     Properties:
@@ -90,7 +91,6 @@ Resources:
           WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
           IML_BASE_URL: !Ref ImlBaseUrl
           IML_AUTH_TOKEN: !Ref ImlAuthToken
-          IML_MAX_ITEMS: !Ref ImlMaxItems
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ImlItemIdTable
@@ -171,9 +171,13 @@ Parameters:
     Type: String
     Description: "IML Auth Token"
     Default: ""
-  ImlMaxItems:
+  ImlMaxBatchItems:
     Type: Number
-    Description: "Maximum Count of Items to retrieve and publish in the ImlGetItemInfoRequest"
+    Description: "Maximum count of Items to publish per message in the ImlGetItemInfoRequest"
+    Default: 10
+  ImlMaxTotalItems:
+    Type: Number
+    Description: "Maximum total count of Items and publish in the ImlGetItemInfoRequest"
     Default: 100
   SqsQueueUrl:
     Type: String

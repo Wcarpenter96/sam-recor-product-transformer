@@ -32,9 +32,9 @@ def lambda_handler(event, context):
 
         items = []
         for record in event["Records"]:
-            items.append(json.loads(record["body"]))
+            items.extend(json.loads(record["body"]))
 
-        woocommerce_products = ProductTransformerService().run(items)
+        ProductTransformerService().run(items)
 
     except Exception as e:
 

@@ -11,6 +11,6 @@ class ProductGetterService:
         self.woocommerce_get_counter_request = WooCommerceGetCounterRequest()
         self.iml_item_publisher_service = ImlItemPublisherService()
 
-    def run(self):
+    def run(self, max_batch_items, max_total_items):
         counter = self.woocommerce_get_counter_request.run()
-        self.iml_item_publisher_service.run(counter)
+        self.iml_item_publisher_service.run(counter, max_batch_items, max_total_items)
