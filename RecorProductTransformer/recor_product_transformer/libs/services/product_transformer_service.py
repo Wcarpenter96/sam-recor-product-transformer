@@ -84,10 +84,8 @@ class ProductTransformerService:
         new_iml_category_ids = iml_category_ids - old_iml_category_ids
 
         if new_iml_category_ids:
-            print(
-                f"ERROR: New IML Categories: {new_iml_category_ids}. Run RecorCategoryTransformer to resolve. Returning"
-            )
-            return
+            warn_msg = f"WARN: New IML Categories: {new_iml_category_ids}. Run RecorCategoryTransformer to resolve"
+            print(warn_msg)
 
         iml_item_ids = {str(product["short_code"]) for product in products}
 

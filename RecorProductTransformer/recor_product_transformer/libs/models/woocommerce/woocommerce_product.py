@@ -26,9 +26,10 @@ class WooCommerceProduct:
     regular_price: Optional[float] = None
     stock_quantity: Optional[int] = None
     description: Optional[str] = None
-    dimensions: Optional[List[WooCommerceDimensions]] = None
+    dimensions: Optional[WooCommerceDimensions] = None
     categories: Optional[List[WooCommerceCategory]] = None
     images: Optional[List[WooCommerceImage]] = None
+    weight: Optional[str] = None
 
     def to_json(self) -> dict:
         """
@@ -46,7 +47,11 @@ class WooCommerceProduct:
             "description": self.description,
             "categories": [category.to_json() for category in self.categories],
             "images": [image.to_json() for image in self.images],
+            "weight": self.weight
         }
+
+        if self.dimensions:
+            woocommerce_product["dimensions"] = self.dimensions.to_json()
 
         # For Updates Only
         if self.id:

@@ -42,10 +42,12 @@ class ImlItemTransformer(Transformer):
 
     def _get_categories(self, raw_json):
         category_id_map = raw_json.get(self.CATEGORY_ID_MAP)
-        return [
-            WooCommerceCategory(id=category_id_map[str(iml_category_id)])
-            for iml_category_id in raw_json.get("category_id")
-        ]
+        categories = []
+        for iml_category_id in category_id_map:
+            woocommerce_category_id  = category_id_map.get(str(iml_category_id))
+            if woocommerce_category_id:
+                categories.append(WooCommerceCategory(id=woocommerce_category_id))
+        return categories
 
     def _get_description(self, raw_json):
         extended_desc = raw_json.get("extended_desc")
