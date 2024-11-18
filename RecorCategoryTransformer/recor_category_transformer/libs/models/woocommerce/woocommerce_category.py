@@ -38,6 +38,6 @@ class WooCommerceCategory:
 
         # For Creates Only
         if self.image:
-            woocommerce_category["image"] = (self.image.to_json(),)
+            woocommerce_category["image"] = self.image.to_json()
 
         return woocommerce_category
