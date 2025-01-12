@@ -77,7 +77,7 @@ Resources:
           IML_MAX_TOTAL_ITEMS: !Ref ImlMaxTotalItems
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref ImlCounterTable
+            TableName: !Ref ImlCounter
   RecorProductTransformer:
     Type: AWS::Serverless::Function
     Properties:
@@ -134,13 +134,13 @@ Resources:
         Name: category_id
         Type: String
       TableName: iml-category-id-table
-  ImlCounterTable:
+  ImlCounter:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
         Name: counter_name
         Type: String
-      TableName: iml-counter-table
+      TableName: iml-counter
 
 Outputs:
   RecorProductGetter:

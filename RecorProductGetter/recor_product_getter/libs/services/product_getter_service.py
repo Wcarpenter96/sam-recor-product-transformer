@@ -7,13 +7,13 @@ import boto3
 class ProductGetterService:
     def __init__(self):
         self.dynamodb = boto3.resource("dynamodb")
-        self.counter_table = boto3.resource("dynamodb").Table("iml-counter-table")
+        self.counter_table = boto3.resource("dynamodb").Table("iml-counter")
         self.iml_item_publisher_service = ImlItemPublisherService()
 
     def run(self, max_batch_items, max_total_items):
 
         response = self.dynamodb.get_item(
-            TableName= "iml-counter-table",
+            TableName= "iml-counter",
             Key = {
                 "counter_name": {
                     "S": "item_info_since"
@@ -22,7 +22,7 @@ class ProductGetterService:
         )
 
         current_update_seq = 0
-        for record in response.get("Responses", {}).get("iml-counter-table", []):
+        for record in response.get("Responses", {}).get("iml-counter", []):
             if record["counter_name"] == "item_info_since":
                 current_update_seq = int(record["counter"])
 
@@ -34,4 +34,4 @@ class ProductGetterService:
                 "counter": iml_update_seq,
             })
 
-        print(f"SUCCESS: Updated item_info_since={iml_update_seq} counter in iml-counter-table")
+        print(f"SUCCESS: Updated item_infdo_since={iml_update_seq} counter in iml-counter")
