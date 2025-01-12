@@ -12,11 +12,12 @@ class ProductGetterService:
 
     def run(self, max_batch_items, max_total_items):
 
-        response = self.dynamodb.get_item(
-            TableName= "iml-counter",
-            Key = {
-                "counter_name": {
-                    "S": "item_info_since"
+        response = self.dynamodb.batch_get_item(
+            RequestItems={
+                "iml-counter": {
+                    "Keys": [
+                        {"counter_name": "item_info_since"}
+                    ]
                 }
             }
         )

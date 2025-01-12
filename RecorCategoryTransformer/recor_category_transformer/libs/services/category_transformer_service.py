@@ -136,11 +136,16 @@ class CategoryTransformerService:
                     }
                 )
                 new_categories.append(new_category)
+            print("ATTEMPT: Updating WooCommerce categories: ", new_categories)
             response = self.woocommerce_batch_update_categories_request.run(
                 new_categories, []
             )
+            print("SUCCESS: Batch updated categories, response: ", response)
             with self.category_id_table.batch_writer() as writer:
                 for new_woocommerce_category in response.get("create", []):
+                    if "error" in new_woocommerce_category:
+                        print("ERROR: Unable to create WooCommerce category: ", new_woocommerce_category)
+                        continue
                     woocommerce_category_id = new_woocommerce_category["id"]
                     iml_category_id = new_woocommerce_category["slug"]
                     category_map = {
