@@ -30,7 +30,7 @@ class ImlItemPublisherService:
         self.sqs_client = boto3.client("sqs")
         self.queue_url = os.getenv("SQS_QUEUE_URL")
 
-    def run(self, counter, max_batch_items, max_total_items):
+    def run(self, counter, max_batch_items, max_total_items) -> int:
         response = ImlGetItemInfoRequest().run(counter)
         total_item_count = 0
         batch_item_count = 0
@@ -67,3 +67,13 @@ class ImlItemPublisherService:
         print(
             f"SUCCESS: Published {batch_count * max_batch_items} Items to {self.queue_url}"
         )
+
+        print("ATTEMPT: Extracting and return last_update_seq from IML response")
+
+        for last_update_seq in ijson.items(
+                ResponseAsFileObject(response.iter_content(chunk_size=65536)),
+                "last_update_seq"
+        ):
+            print(f"Found last update seq={last_update_seq}")
+            return int(last_update_seq)
+

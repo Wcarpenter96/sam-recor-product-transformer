@@ -71,11 +71,13 @@ Resources:
           WOOCOMMERCE_BASE_URL: !Ref WoocommerceBaseUrl
           WOOCOMMERCE_CONSUMER_KEY: !Ref WoocommerceConsumerKey
           WOOCOMMERCE_CONSUMER_SECRET: !Ref WoocommerceConsumerSecret
-          WOOCOMMERCE_IML_COUNTER_PRODUCT_ID: !Ref WoocommerceImlCounterProductId
           IML_BASE_URL: !Ref ImlBaseUrl
           IML_AUTH_TOKEN: !Ref ImlAuthToken
           IML_MAX_BATCH_ITEMS: !Ref ImlMaxBatchItems
           IML_MAX_TOTAL_ITEMS: !Ref ImlMaxTotalItems
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ImlCounterTable
   RecorProductTransformer:
     Type: AWS::Serverless::Function
     Properties:
@@ -132,6 +134,13 @@ Resources:
         Name: category_id
         Type: String
       TableName: iml-category-id-table
+  ImlCounterTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: counter
+        Type: String
+      TableName: iml-counter-table
 
 Outputs:
   RecorProductGetter:
@@ -159,10 +168,6 @@ Parameters:
     Description: "WooCommerce Consumer Secret"
     Default: ""
     NoEcho: true
-  WoocommerceImlCounterProductId:
-    Type: Number
-    Description: "WooCommerce Product ID for IML Last Call Counter"
-    Default: 0
   ImlBaseUrl:
     Type: String
     Description: "IML Base Url"
