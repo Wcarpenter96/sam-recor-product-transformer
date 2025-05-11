@@ -3,7 +3,7 @@ import json
 import os
 from unittest import TestCase
 
-from recor_product_transformer.libs.transformers.iml.iml_item_transformer import (
+from recor_layer.transformers.iml.iml_item_transformer import (
     ImlItemTransformer,
 )
 

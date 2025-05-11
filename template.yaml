@@ -57,6 +57,14 @@ Resources:
       Enabled: true
       EventSourceArn: !GetAtt RecorQueue.Arn
       FunctionName: !GetAtt RecorProductTransformer.Arn
+  RecorLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: RecorLayer
+      Description: "Recor shared dependencies"
+      ContentUri: ./layers/RecorLayer
+      CompatibleRuntimes:
+        - python3.9
   RecorProductGetter:
     Type: AWS::Serverless::Function
     Properties:
@@ -78,6 +86,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ImlCounter
+    Layers:
+      - !Ref RecorLayer
   RecorProductTransformer:
     Type: AWS::Serverless::Function
     Properties:
@@ -99,6 +109,8 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ImlCategoryIdTable
       Role: !GetAtt 'LambdaSqsRole.Arn'
+      Layers:
+        - !Ref RecorLayer
   RecorCategoryTransformer:
     Type: AWS::Serverless::Function
     Properties:
@@ -120,6 +132,8 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ImlCategoryIdTable
       Role: !GetAtt 'LambdaSqsRole.Arn'
+      Layers:
+        - !Ref RecorLayer
   ImlItemIdTable:
     Type: AWS::Serverless::SimpleTable
     Properties:

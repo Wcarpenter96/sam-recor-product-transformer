@@ -1,22 +1,20 @@
-from typing import Dict
-
 import boto3
-from recor_product_transformer.libs.requests.iml.iml_get_category_list_request import (
+from recor_layer.requests.iml.iml_get_category_list_request import (
     ImlGetCategoryListRequest,
 )
-from recor_product_transformer.libs.requests.woocommerce.woocommerce_batch_update_categories_request import (
+from recor_layer.requests.woocommerce.woocommerce_batch_update_categories_request import (
     WooCommerceBatchUpdateCategoriesRequest,
 )
-from recor_product_transformer.libs.requests.woocommerce.woocommerce_batch_update_products_request import (
+from recor_layer.requests.woocommerce.woocommerce_batch_update_products_request import (
     WooCommerceBatchUpdateProductsRequest,
 )
-from recor_product_transformer.libs.requests.woocommerce.woocommerce_list_all_categories_request import (
+from recor_layer.requests.woocommerce.woocommerce_list_all_categories_request import (
     WooCommerceListAllCategoriesRequest,
 )
-from recor_product_transformer.libs.transformers.iml.iml_category_transformer import (
+from recor_layer.transformers.iml.iml_category_transformer import (
     ImlCategoryTransformer,
 )
-from recor_product_transformer.libs.transformers.iml.iml_item_transformer import (
+from recor_layer.transformers.iml.iml_item_transformer import (
     ImlItemTransformer,
 )
 

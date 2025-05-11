@@ -1,10 +1,9 @@
-import decimal
 import os
 from json import dumps
 
 import boto3
 import ijson
-from recor_product_getter.libs.requests.iml.iml_get_item_info_request import (
+from recor_layer.requests.iml.iml_get_item_info_request import (
     ImlGetItemInfoRequest,
 )
 

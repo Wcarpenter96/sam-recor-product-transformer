@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/RecorProductTransformer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/RecorProductTransformer" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/RecorCategoryTransformer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/layers/RecorLayer/python/lib/python3.9/site-packages" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (sam-recor-product-transformer)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -13,13 +14,6 @@
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
     <option name="myDocStringFormat" value="Plain" />
-  </component>
-  <component name="PyNamespacePackagesService">
-    <option name="namespacePackageFolders">
-      <list>
-        <option value="$MODULE_DIR$/RecorProductTransformer/recor_product_transformer/libs/requests" />
-      </list>
-    </option>
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="py.test" />
