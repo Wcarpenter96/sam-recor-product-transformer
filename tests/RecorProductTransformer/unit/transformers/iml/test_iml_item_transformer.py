@@ -3,9 +3,7 @@ import json
 import os
 from unittest import TestCase
 
-from recor_layer.transformers.iml.iml_item_transformer import (
-    ImlItemTransformer,
-)
+from recor_layer.transformers.iml.iml_item_transformer import ImlItemTransformer
 
 SAMPLE_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_files")
 

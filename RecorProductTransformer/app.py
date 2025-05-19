@@ -1,7 +1,7 @@
 import json
 import traceback
 
-from recor_product_transformer.libs.services.product_transformer_service import (
+from recor_layer.services.woocommerce.woocommerce_service import (
     ProductTransformerService,
 )
 
