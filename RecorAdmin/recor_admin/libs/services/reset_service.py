@@ -25,7 +25,9 @@ class ResetService:
         # Retrieve and delete all items from iml-item-id-table
         items = self.dynamodb_service.get_all_dynamodb_items("iml-item-id-table")
         woocommerce_product_ids = [item.get("woocommerce_product_id") for item in items]
-        print(f"ATTEMPT: Deleting ids from iml-item-id-table: {woocommerce_product_ids}")
+        print(
+            f"ATTEMPT: Deleting ids from iml-item-id-table: {woocommerce_product_ids}"
+        )
         self.dynamodb_service.delete_all_dynamodb_items("iml-item-id-table")
         print("SUCCESS: Successfully deleted ids from iml-item-id-table")
 
@@ -33,9 +35,15 @@ class ResetService:
         self.woocommerce_service.delete_products(woocommerce_product_ids)
 
         # Retrieve and delete all categories from iml-category-id-table
-        categories = self.dynamodb_service.get_all_dynamodb_items("iml-category-id-table")
-        woocommerce_category_ids = [category.get("woocommerce_category_id") for category in categories]
-        print(f"ATTEMPT: Deleting ids from iml-category-id-table: {woocommerce_category_ids}")
+        categories = self.dynamodb_service.get_all_dynamodb_items(
+            "iml-category-id-table"
+        )
+        woocommerce_category_ids = [
+            category.get("woocommerce_category_id") for category in categories
+        ]
+        print(
+            f"ATTEMPT: Deleting ids from iml-category-id-table: {woocommerce_category_ids}"
+        )
         self.dynamodb_service.delete_all_dynamodb_items("iml-category-id-table")
         print("SUCCESS: Successfully deleted ids from iml-category-id-table")
 
@@ -52,9 +60,3 @@ class ResetService:
         )
 
         print("SUCCESS: all categories and items from DynamoDB and WooCommerce deleted")
-
-
-
-
-
-
